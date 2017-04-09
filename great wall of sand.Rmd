@@ -1,0 +1,44 @@
+---
+title: "Great Wall of Sand"
+author: "KEE"
+date: "April 9, 2017"
+output: html_document
+---
+
+The **Great wall of sand** is a name used by some of the media, (and this webpage), for a series of land reclamation projects on seven reefs in the Spratly islands area of the South China Sea undertaken by the *People's Republic of China (PRC)* since late 2013 - in order to strengthen PRC territorial claims to the region demarcated by the *Nine-dash line*.    
+
+**Taiping Island** is an island administered by the *Republic of China (ROC)*. It is part of the *Tizard Bank (Zheng He Reefs)*. It is named Taiping (literally: "peace island") in honor of a Nationalist Chinese Navy warship which sailed to the island when Japan surrendered after the Second World War.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(leaflet)
+df <- data.frame(name= c("Itu Aba Island (Taiping Island)", "Cuarteron Reef (Huayang Reef)", 
+                         "Fiery Cross Reef (Yongshu Reef)", "Gaven Reefs	(Nanxun Reef)", 
+                         "Hughes Reef	(Dongmen Reef)", "Johnson South Reef (Chigua Reef)", 
+                         "Mischief Reef (Meiji Reef)", "Subi Reef (Zhubi Reef)"),
+                 lat = c(10.37694444, 8.863888889, 9.549166667, 10.20833333,
+                         9.916666667, 9.715, 9.916666667, 10.9133),
+                 lng = c(114.36583333, 112.8277778, 112.8891667, 114.225,
+                         114.5, 114.287, 115.5333333, 114.062),
+                 area= c(110, 56, 677, 34, 19, 27, 1379, 976),
+                 col = c("blue", "red", "red", "red", "red", "red", "red", "red"),
+                 stringsAsFactors = FALSE)
+
+df %>%
+  leaflet() %>%
+  addTiles() %>%
+  addCircles(weight = 1, radius = (df$area^0.25*5000), color = df$col, 
+             popup = paste0(df$name, "<br/>Area: ", df$area, " acres")) %>%
+  addLegend(labels = c("Republic of China (ROC)", "People's Republic of China (PRC)"), 
+            colors = c("blue", "red"))
+```
+
+### Reference
+https://en.wikipedia.org/wiki/Great_wall_of_sand  
+https://en.wikipedia.org/wiki/Taiping_Island  
+https://en.wikipedia.org/wiki/Fiery_Cross_Reef  
+https://en.wikipedia.org/wiki/Cuarteron_Reef  
+https://en.wikipedia.org/wiki/Gaven_Reefs  
+https://en.wikipedia.org/wiki/Hughes_Reef  
+https://en.wikipedia.org/wiki/Johnson_South_Reef  
+https://en.wikipedia.org/wiki/Mischief_Reef  
+https://en.wikipedia.org/wiki/Subi_Reef
