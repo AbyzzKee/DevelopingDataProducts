@@ -1,0 +1,103 @@
+---
+title: 'World War II casualties'
+author: "KEE"
+date: "15 April 2017"
+always_allow_html: yes
+output: ioslides_presentation
+---
+
+## World War II casualties
+ - *World War II* was the deadliest military conflict in history in absolute terms of total casualties.  
+ - Over **60 million** people were killed, which was about **3%** of the 1940 world population (est. 2.3 billion).  
+  
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(dplyr)
+library(plotly)
+df <- data.frame("Country"=c(
+                  "China", "British India", "Soviet Union", "United States", "Japan", 
+                  "Dutch East Indies", "Germany", "United Kingdom (including colonies)",
+                  "Italy", "France (including colonies)", "Poland", "Yugoslavia", 
+                  "French Indochina", "Approx. totals"),	
+                 "Total population on 1939"=c(
+                   517568000, 377800000, 188793000, 131028000, 71380000, 69435000, 69300000,
+                   47760000, 44394000, 41680000, 34849000, 15490000, 24664000, 2300000000),
+                 "Military deaths from all causes"=c(
+                   3750000, 87000, 11400000, 407300, 2300000, 11500, 5318000, 383700, 
+                   339200, 210000, 240000, 446000, 0, 25500000),
+                 "Civilian deaths due to military activity and crimes against humanity"=c(
+                   8191000, 0, 10000000, 12100, 800000, 300000, 3000000, 67200, 153200, 
+                   390000, 5820000, 1400000, 0, 30500000),
+                 "Civilian deaths due to war related famine and disease"=c(
+                   10000000, 2500000, 7000000, 0, 0, 4000000, 0, 0, 0, 0, 0, 0, 
+                   2000000, 28000000),
+                 "Total deaths"=c(
+                   20000000, 2600000, 27000000, 419400, 3100000, 4000000, 7400000, 450900,
+                   492400, 600000, 6000000, 1700000, 2200000, 85000000),
+                 stringsAsFactors = FALSE)
+countries_df <- df[-14,]
+countries_df <- rbind(countries_df, data.frame("Country"="Other", 
+                "Total population on 1939"=as.numeric(df[14,2]-sum(countries_df[,2])),
+                "Military deaths from all causes"=as.numeric(df[14,3]-sum(countries_df[,3])),
+                "Civilian deaths due to military activity and crimes against humanity"=
+                  as.numeric(df[14,4]-sum(countries_df[,4])),
+                "Civilian deaths due to war related famine and disease"=
+                  as.numeric(df[14,5]-sum(countries_df[,5])),
+                "Total deaths"=as.numeric(df[14,6]-sum(countries_df[,6]))))
+countries_df <- mutate(countries_df, "Deaths as % of 1939 population"=
+               round(Total.deaths/Total.population.on.1939*100, 2) )
+names(countries_df) <- c("Country",	"Total population on 1939", 
+               "Military deaths from all causes",
+               "Civilian deaths due to military activity and crimes against humanity",
+               "Civilian deaths due to war related famine and disease",
+               "Total deaths", "Deaths as % of 1939 population")
+countries_df <- mutate(countries_df, "sizePlot"=round(`Total population on 1939`^0.25,0))
+```
+
+## Civilian Casualties
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+plot_ly(countries_df, 
+        x = ~`Civilian deaths due to military activity and crimes against humanity`, 
+        y = ~`Civilian deaths due to war related famine and disease`, type = "scatter",
+        color = ~Country, alpha = 0.8, 
+        size = ~sizePlot, sizes = c(10,30)
+        )
+```
+
+ - *Marker size indicate population size on 1939*
+
+## Military Casualties
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+plot_ly(countries_df, 
+        labels = ~`Country`,
+        values = ~`Military deaths from all causes`, 
+        
+        insidetextfont = list(color = '#FFFFFF'),
+        textposition = 'inside', 
+        textinfo = 'label+percent',
+        
+        type = "pie",
+        showlegend = FALSE) %>% 
+  
+  layout(title = 'Military Casualties by Country',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+```
+
+## All Casualties by Country
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+plot_ly(countries_df, 
+        y = ~Country, 
+        x = ~`Military deaths from all causes`, 
+        name = "Military deaths from all causes",
+        type = "bar", orientation = 'h',
+        hovertext='value'
+        ) %>%
+  add_trace(x = ~`Civilian deaths due to military activity and crimes against humanity`, 
+            name = 'Civilian deaths due to military activity and crimes against humanity') %>%
+  add_trace(x = ~`Civilian deaths due to war related famine and disease`, 
+            name = 'Civilian deaths due to war related famine and disease') %>%
+  layout(barmode = 'stack', margin = list(l = 250, r = 10, t = 0, b = 30))
+```
+
+## Reference:
+https://en.wikipedia.org/wiki/World_War_II_casualties
