@@ -7,11 +7,11 @@ autosize: true
 
 Introduction
 ========================================================
-This shinyApp display time series decomposition data.  
+ - This shinyApp display time series decomposition data.  
 
-The data is *daily bread sales* from a grocery store from *30 Sept to 30 Nov 2016*.
+ - The data is *daily bread sales* from a grocery store from *30 Sept to 30 Nov 2016*.
 
-This shinyApp helps user to find seasonal bread sales pattern.
+ - This shinyApp helps user to find seasonal bread sales pattern.
 
 Instruction to use the shinyApp
 ========================================================
@@ -20,12 +20,49 @@ Instruction to use the shinyApp
 2. **Bread Product Tab**: click on bread product name to view decomposition graph.
 3. Upon user slide on date, date (weekday) label and graph marker will update accordingly.
 
+- Sample graph (R expression):  
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=6, fig.height=4}
+library(shiny)
+library(forecast)
+
+bread <- read.csv("bread.csv")
+
+# Aggregate Sales Data by Date
+dailySales <- aggregate(list(count=bread$count), list(recpt_dt = as.Date(bread$recpt_dt), item_id = factor(bread$item_id)), sum)
+
+# Separate data by product
+GARDENIA_CLASSIC <- data.frame(count = dailySales[dailySales$item_id==23,   "count"])
+GARDENIA_BONANZA <- data.frame(count = dailySales[dailySales$item_id==24,   "count"])
+ROTI_SEDAP       <- data.frame(count = dailySales[dailySales$item_id==8331, "count"])
+
+# Time Series by week
+ts_GARDENIA_CLASSIC <- ts(GARDENIA_CLASSIC, frequency=7)
+ts_GARDENIA_BONANZA <- ts(GARDENIA_BONANZA, frequency=7)
+ts_ROTI_SEDAP       <- ts(ROTI_SEDAP, frequency=7)
+
+# Weekdays
+breadDate <- dailySales[dailySales$item_id==8331, "recpt_dt"]
+breadWeek <- data.frame(weekdays=weekdays(breadDate))
+breadWeek$num <- as.numeric(factor(breadWeek$weekdays, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")))
+
+dimnames(ts_GARDENIA_CLASSIC)[1] <- list(breadWeek$weekdays)
+dimnames(ts_GARDENIA_BONANZA)[1] <- list(breadWeek$weekdays)
+dimnames(ts_ROTI_SEDAP)[1]       <- list(breadWeek$weekdays)
+
+# library(forecast)
+trend_GARDENIA_CLASSIC <- decompose(ts_GARDENIA_CLASSIC)
+trend_GARDENIA_BONANZA <- decompose(ts_GARDENIA_BONANZA)
+trend_ROTI_SEDAP       <- decompose(ts_ROTI_SEDAP)
+
+plot(trend_GARDENIA_CLASSIC,xlab="Weeks", ylab="Bread Sold")
+abline ( v = 5, col = "magenta", lwd = 2 )
+```
 
 Technical Details
 ========================================================
-Data preprocess are performed at server side before user interaction.
+ - Data preprocess are performed at server side before user interaction.
 
-On user interaction, server only process the slider input into date and update graph with date marker.
+ - On user interaction, server only process the slider input into date and update graph with date marker.
 
 Thank you
 ========================================================
