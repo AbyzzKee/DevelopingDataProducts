@@ -1,0 +1,35 @@
+Seasonal Bread Sales Viewer
+========================================================
+author: KEE
+date: 30 Apr 2017
+autosize: true
+**Lesson 9 Assignment - ShinyApp**
+
+Introduction
+========================================================
+This shinyApp display time series decomposition data.  
+
+The data is *daily bread sales* from a grocery store from *30 Sept to 30 Nov 2016*.
+
+This shinyApp helps user to find seasonal bread sales pattern.
+
+Instruction to use the shinyApp
+========================================================
+
+1. **Date Slider**: move date slider to select date.
+2. **Bread Product Tab**: click on bread product name to view decomposition graph.
+3. Upon user slide on date, date (weekday) label and graph marker will update accordingly.
+
+
+Technical Details
+========================================================
+Data preprocess are performed at server side before user interaction.
+
+On user interaction, server only process the slider input into date and update graph with date marker.
+
+Thank you
+========================================================
+
+To access the shinyApp, please visit:
+
+https://abyzzkee.shinyapps.io/submission/
